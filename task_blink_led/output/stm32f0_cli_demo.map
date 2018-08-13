@@ -1,0 +1,111 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+RAM              0x20000000         0x00002000         xrw
+FLASH            0x08000000         0x00010000         xr
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+                0x20002000                _estack = 0x20002000
+                0x00000200                _Min_Heap_Size = 0x200
+                0x00000400                _Min_Stack_Size = 0x400
+
+.isr_vector     0x08000000        0x0
+                0x08000000                . = ALIGN (0x4)
+ *(.isr_vector)
+                0x08000000                . = ALIGN (0x4)
+
+.text           0x08000000        0x0
+                0x08000000                . = ALIGN (0x4)
+ *(.text)
+ *(.text*)
+ *(.glue_7)
+ .glue_7        0x08000000        0x0 linker stubs
+ *(.glue_7t)
+ .glue_7t       0x08000000        0x0 linker stubs
+ *(.eh_frame)
+ *(.init)
+ *(.fini)
+                0x08000000                . = ALIGN (0x4)
+                0x08000000                _etext = .
+
+.vfp11_veneer   0x08000000        0x0
+ .vfp11_veneer  0x08000000        0x0 linker stubs
+
+.v4_bx          0x08000000        0x0
+ .v4_bx         0x08000000        0x0 linker stubs
+
+.rodata         0x08000000        0x0
+                0x08000000                . = ALIGN (0x4)
+ *(.rodata)
+ *(.rodata*)
+                0x08000000                . = ALIGN (0x4)
+
+.ARM.extab
+ *(.ARM.extab* .gnu.linkonce.armextab.*)
+
+.ARM            0x08000000        0x0
+                0x08000000                __exidx_start = .
+ *(.ARM.exidx*)
+                0x08000000                __exidx_end = .
+
+.preinit_array  0x08000000        0x0
+                [!provide]                PROVIDE (__preinit_array_start, .)
+ *(.preinit_array*)
+                [!provide]                PROVIDE (__preinit_array_end, .)
+
+.init_array     0x08000000        0x0
+                [!provide]                PROVIDE (__init_array_start, .)
+ *(SORT_BY_NAME(.init_array.*))
+ *(.init_array*)
+                [!provide]                PROVIDE (__init_array_end, .)
+
+.fini_array     0x08000000        0x0
+                [!provide]                PROVIDE (__fini_array_start, .)
+ *(SORT_BY_NAME(.fini_array.*))
+ *(.fini_array*)
+                [!provide]                PROVIDE (__fini_array_end, .)
+                0x08000000                _sidata = LOADADDR (.data)
+
+.data           0x20000000        0x0 load address 0x08000000
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                _sdata = .
+ *(.data)
+ *(.data*)
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                _edata = .
+                0x20000000                . = ALIGN (0x4)
+
+.bss            0x20000000        0x0 load address 0x08000000
+                0x20000000                _sbss = .
+                0x20000000                __bss_start__ = _sbss
+ *(.bss)
+ *(.bss*)
+ *(COMMON)
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                _ebss = .
+                0x20000000                __bss_end__ = _ebss
+
+._user_heap_stack
+                0x20000000      0x600 load address 0x08000000
+                0x20000000                . = ALIGN (0x8)
+                [!provide]                PROVIDE (end, .)
+                [!provide]                PROVIDE (_end, .)
+                0x20000200                . = (. + _Min_Heap_Size)
+ *fill*         0x20000000      0x200 
+                0x20000600                . = (. + _Min_Stack_Size)
+ *fill*         0x20000200      0x400 
+                0x20000600                . = ALIGN (0x8)
+
+/DISCARD/
+ libc_nano.a(*)
+ libm.a(*)
+
+.ARM.attributes
+ *(.ARM.attributes)
+LOAD C:/tools/compiler/7_2017-q4-major/arm-none-eabi/lib/thumb/v6-m\libc_nano.a
+LOAD C:/tools/compiler/7_2017-q4-major/arm-none-eabi/lib/thumb/v6-m\libnosys.a
+LOAD C:/tools/compiler/7_2017-q4-major/lib/gcc/arm-none-eabi/7.2.1/thumb/v6-m\libgcc.a
+OUTPUT(./output/stm32f0_cli_demo.elf elf32-littlearm)
